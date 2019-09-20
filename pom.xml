@@ -45,6 +45,14 @@ limitations under the License.
     </mailingList>
   </mailingLists>
 
+  <distributionManagement>
+    <repository>
+      <id>nexus</id>
+      <name>Looker Release Repository</name>
+      <url>https://nexusrepo.looker.com/repository/maven-releases/</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <!-- Ensure that source and target version are overridden from base ASF POM.
          This is also used by forbiddenapis to ensure correct signatures are loaded. -->
