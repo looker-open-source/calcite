@@ -45,6 +45,14 @@ limitations under the License.
     </mailingList>
   </mailingLists>
 
+  <distributionManagement>
+    <repository>
+      <id>nexus</id>
+      <name>Looker Release Repository</name>
+      <url>https://nexusrepo.looker.com/repository/maven-releases/</url>
+    </repository>
+  </distributionManagement>
+
   <properties>
     <!-- Ensure that source and target version are overridden from base ASF POM.
          This is also used by forbiddenapis to ensure correct signatures are loaded. -->
@@ -820,6 +828,11 @@ limitations under the License.
              commit during release process. -->
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <!-- For Looker release, don't push to origin. -->
+          <localCheckout>true</localCheckout>
+          <pushChanges>false</pushChanges>
+        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.scm</groupId>
