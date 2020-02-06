@@ -1309,8 +1309,9 @@ public class RelBuilder {
       fieldNameList.add(null);
     }
 
+    bloat:
     if (frame.rel instanceof Project
-        && shouldMergeProject()) {
+        && config.bloat >= 0) {
       final Project project = (Project) frame.rel;
       // Populate field names. If the upper expression is an input ref and does
       // not have a recommended name, use the name of the underlying field.
@@ -1325,7 +1326,13 @@ public class RelBuilder {
         }
       }
       final List<RexNode> newNodes =
-          RelOptUtil.pushPastProject(nodeList, project);
+          RelOptUtil.pushPastProjectUnlessBloat(nodeList, project,
+              config.bloat);
+      if (newNodes == null) {
+        // The merged expression is more complex than the input expressions.
+        // Do not merge.
+        break bloat;
+      }
 
       // Carefully build a list of fields, so that table aliases from the input
       // can be seen for fields that are based on a RexInputRef.
@@ -1424,6 +1431,7 @@ public class RelBuilder {
    * <p>The default implementation returns {@code true};
    * sub-classes may disable merge by overriding to return {@code false}. */
   @Experimental
+  @Deprecated
   protected boolean shouldMergeProject() {
     return true;
   }
@@ -2890,19 +2898,58 @@ public class RelBuilder {
   public static class Config {
     /** Default configuration. */
     public static final Config DEFAULT =
-        new Config(true, true);
+        new Config(100, true, true);
 
     /** Whether {@link RelBuilder#aggregate} should eliminate duplicate
      * aggregate calls; default true. */
     public final boolean dedupAggregateCalls;
+
+    /** Controls whether to merge two {@link Project} operators when inlining
+     * expressions causes complexity to increase.
+     *
+     * <p>Usually merging projects is beneficial, but occasionally the
+     * result is more complex than the original projects. Consider:
+     *
+     * <pre>
+     * P: Project(a+b+c AS x, d+e+f AS y, g+h+i AS z)  # complexity 15
+     * Q: Project(x*y*z AS p, x-y-z AS q)              # complexity 10
+     * R: Project((a+b+c)*(d+e+f)*(g+h+i) AS s,
+     *            (a+b+c)-(d+e+f)-(g+h+i) AS t)        # complexity 34
+     * </pre>
+     *
+     * The complexity of an expression is the number of nodes (leaves and
+     * operators). For example, {@code a+b+c} has complexity 5 (3 field
+     * references and 2 calls):
+     *
+     * <pre>
+     *       +
+     *      /  \
+     *     +    c
+     *    / \
+     *   a   b
+     * </pre>
+     *
+     * <p>A negative value never allows merges.
+     *
+     * <p>A zero or positive value, {@code bloat}, allows a merge if complexity
+     * of the result is less than or equal to the sum of the complexity of the
+     * originals plus {@code bloat}.
+     *
+     * <p>The default value, 100, allows a moderate increase in complexity but
+     * prevents cases where complexity would run away into the millions and run
+     * out of memory. Moderate complexity is OK; the implementation, say via
+     * {@link org.apache.calcite.adapter.enumerable.EnumerableCalc}, will often
+     * gather common sub-expressions and compute them only once.
+     */
+    public final int bloat;
 
     /** Whether to simplify expressions; default true. */
     public final boolean simplify;
 
     // called only from ConfigBuilder and when creating DEFAULT;
     // parameters and fields must be in alphabetical order
-    private Config(boolean dedupAggregateCalls,
-        boolean simplify) {
+    private Config(int bloat, boolean dedupAggregateCalls, boolean simplify) {
+      this.bloat = bloat;
       this.dedupAggregateCalls = dedupAggregateCalls;
       this.simplify = simplify;
     }
@@ -2917,6 +2964,7 @@ public class RelBuilder {
      * Config. */
     public ConfigBuilder toBuilder() {
       return new ConfigBuilder()
+          .withBloat(bloat)
           .withDedupAggregateCalls(dedupAggregateCalls)
           .withSimplify(simplify);
     }
@@ -2924,6 +2972,7 @@ public class RelBuilder {
 
   /** Creates a {@link RelBuilder.Config}. */
   public static class ConfigBuilder {
+    private int bloat;
     private boolean dedupAggregateCalls;
     private boolean simplify;
 
@@ -2932,7 +2981,14 @@ public class RelBuilder {
 
     /** Creates a {@link RelBuilder.Config}. */
     public Config build() {
-      return new Config(dedupAggregateCalls, simplify);
+      return new Config(bloat, dedupAggregateCalls, simplify);
+    }
+
+    /** Sets the value that will become
+     * {@link org.apache.calcite.tools.RelBuilder.Config#bloat}. */
+    public ConfigBuilder withBloat(int bloat) {
+      this.bloat = bloat;
+      return this;
     }
 
     /** Sets the value that will become

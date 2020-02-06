@@ -213,17 +213,6 @@ public class RexProgramTest extends RexProgramBuilderBase {
     assertThat(simplified.toString(), equalTo(expected));
   }
 
-  /** Returns the number of nodes (including leaves) in a Rex tree. */
-  private static int nodeCount(RexNode node) {
-    int n = 1;
-    if (node instanceof RexCall) {
-      for (RexNode operand : ((RexCall) node).getOperands()) {
-        n += nodeCount(operand);
-      }
-    }
-    return n;
-  }
-
   /**
    * Tests construction of a RexProgram.
    */
@@ -1004,7 +993,7 @@ public class RexProgramTest extends RexProgramBuilderBase {
               rexBuilder.makeFieldAccess(range3, i * 2 + 1)));
     }
     final RexNode cnf = RexUtil.toCnf(rexBuilder, or(list));
-    final int nodeCount = nodeCount(cnf);
+    final int nodeCount = RexUtil.nodeCount(cnf);
     assertThat((n + 1) * (int) Math.pow(2, n) + 1, equalTo(nodeCount));
     if (n == 3) {
       assertThat(cnf.toString(),
