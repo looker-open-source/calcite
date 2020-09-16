@@ -75,7 +75,7 @@ public class SqlInternalOperator extends SqlSpecialOperator {
   //~ Methods ----------------------------------------------------------------
 
   @Override public SqlSyntax getSyntax() {
-    return SqlSyntax.INTERNAL;
+    return SqlSyntax.FUNCTION;
   }
 
   @Override public RelDataType deriveType(SqlValidator validator,
