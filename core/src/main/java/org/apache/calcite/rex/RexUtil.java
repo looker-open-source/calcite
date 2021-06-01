@@ -2090,11 +2090,12 @@ public class RexUtil {
     case GREATER_THAN:
     case LESS_THAN_OR_EQUAL:
     case GREATER_THAN_OR_EQUAL:
-      final SqlOperator op = requireNonNull(call.getOperator().reverse());
+      final SqlOperator op = op(call.getKind().reverse());
       return rexBuilder.makeCall(op, Lists.reverse(call.getOperands()));
     default:
-      return null;
+      break;
     }
+    return null;
   }
 
   @Deprecated // to be removed before 2.0

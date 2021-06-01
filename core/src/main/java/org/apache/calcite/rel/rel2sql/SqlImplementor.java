@@ -335,6 +335,25 @@ public abstract class SqlImplementor {
     return node;
   }
 
+  private static SqlOperator reverseOperatorDirection(SqlOperator op) {
+    switch (op.kind) {
+    case GREATER_THAN:
+      return SqlStdOperatorTable.LESS_THAN;
+    case GREATER_THAN_OR_EQUAL:
+      return SqlStdOperatorTable.LESS_THAN_OR_EQUAL;
+    case LESS_THAN:
+      return SqlStdOperatorTable.GREATER_THAN;
+    case LESS_THAN_OR_EQUAL:
+      return SqlStdOperatorTable.GREATER_THAN_OR_EQUAL;
+    case EQUALS:
+    case IS_NOT_DISTINCT_FROM:
+    case NOT_EQUALS:
+      return op;
+    default:
+      throw new AssertionError(op);
+    }
+  }
+
   public static JoinType joinType(JoinRelType joinType) {
     switch (joinType) {
     case LEFT:
@@ -1533,7 +1552,7 @@ public abstract class SqlImplementor {
             && ((RexInputRef) op1).getIndex() < leftContext.fieldCount
             && ((RexInputRef) op0).getIndex() >= leftContext.fieldCount) {
           // Arguments were of form 'op1 = op0'
-          final SqlOperator op2 = requireNonNull(call.getOperator().reverse());
+          final SqlOperator op2 = reverseOperatorDirection(call.getOperator());
           return (RexCall) rexBuilder.makeCall(op2, op1, op0);
         }
         // fall through
