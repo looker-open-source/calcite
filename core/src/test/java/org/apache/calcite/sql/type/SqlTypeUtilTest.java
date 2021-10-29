@@ -155,6 +155,10 @@ class SqlTypeUtilTest {
         (SqlBasicTypeNameSpec) convertTypeToSpec(f.sqlNull).getTypeNameSpec();
     assertThat(nullSpec.getTypeName().getSimple(), is("NULL"));
 
+    SqlBasicTypeNameSpec unknownSpec =
+        (SqlBasicTypeNameSpec) convertTypeToSpec(f.sqlUnknown).getTypeNameSpec();
+    assertThat(unknownSpec.getTypeName().getSimple(), is("UNKNOWN"));
+
     SqlBasicTypeNameSpec basicSpec =
         (SqlBasicTypeNameSpec) convertTypeToSpec(f.sqlBigInt).getTypeNameSpec();
     assertThat(basicSpec.getTypeName().getSimple(), is("BIGINT"));
@@ -225,5 +229,37 @@ class SqlTypeUtilTest {
 
     compareTypesIgnoringNullability("identical types should return true.",
         bigIntType, bigIntType1, true);
+  }
+
+  @Test public void testCanAlwaysCastToUnknownFromBasic() {
+    RelDataType unknownType = f.typeFactory.createUnknownType();
+    RelDataType nullableUnknownType = f.typeFactory.createTypeWithNullability(unknownType, true);
+
+    for (SqlTypeName fromTypeName : SqlTypeName.values()) {
+      BasicSqlType fromType;
+      try {
+        // This only works for basic types. Ignore the rest.
+        fromType = (BasicSqlType) f.typeFactory.createSqlType(fromTypeName);
+      } catch (AssertionError e) {
+        continue;
+      }
+      BasicSqlType nullableFromType = fromType.createWithNullability(!fromType.isNullable);
+
+      assertCanCast(unknownType, fromType);
+      assertCanCast(unknownType, nullableFromType);
+      assertCanCast(nullableUnknownType, fromType);
+      assertCanCast(nullableUnknownType, nullableFromType);
+    }
+  }
+
+  private static void assertCanCast(RelDataType toType, RelDataType fromType) {
+    assertThat(
+        String.format(
+            "Expected to be able to cast from %s to %s without coercion.", fromType, toType),
+        SqlTypeUtil.canCastFrom(toType, fromType, /* coerce= */ false), is(true));
+    assertThat(
+        String.format(
+            "Expected to be able to cast from %s to %s with coercion.", fromType, toType),
+        SqlTypeUtil.canCastFrom(toType, fromType, /* coerce= */ true), is(true));
   }
 }
