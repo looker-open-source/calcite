@@ -205,6 +205,47 @@ class RelOptRulesTest extends RelOptTestBase {
     return DiffRepository.lookup(RelOptRulesTest.class);
   }
 
+  @Test void testAARegression() throws Exception {
+    final DiffRepository diffRepos = getDiffRepos();
+    String sql = diffRepos.expand(null, "${sql}");
+
+    TesterImpl t = (TesterImpl) tester;
+    final RelDataTypeFactory typeFactory = t.getTypeFactory();
+    final Prepare.CatalogReader catalogReader =
+        t.createCatalogReader(typeFactory);
+    final SqlValidator validator =
+        t.createValidator(
+            catalogReader, typeFactory);
+    SqlToRelConverter converter =
+        t.createSqlToRelConverter(
+            validator,
+            catalogReader,
+            typeFactory, SqlToRelConverter.config());
+
+    final SqlNode sqlQuery = t.parseQuery(sql);
+    final SqlNode validatedQuery = validator.validate(sqlQuery);
+    RelRoot root =
+        converter.convertQuery(validatedQuery, false, true);
+    root = root.withRel(converter.decorrelate(sqlQuery, root.rel));
+
+    final HepProgram program =
+        HepProgram.builder()
+            .addRuleCollection(ImmutableList.)
+            .build();
+
+    HepPlanner planner = new HepPlanner(program);
+    planner.setRoot(root.rel);
+    root = root.withRel(planner.findBestExp());
+
+    String planBefore = NL + RelOptUtil.toString(root.rel);
+    diffRepos.assertEquals("planBefore", "${planBefore}", planBefore);
+    converter = t.createSqlToRelConverter(validator, catalogReader, typeFactory,
+        SqlToRelConverter.config().withTrimUnusedFields(true));
+    root = root.withRel(converter.trimUnusedFields(false, root.rel));
+    String planAfter = NL + RelOptUtil.toString(root.rel);
+    diffRepos.assertEquals("planAfter", "${planAfter}", planAfter);
+  }
+
   @Test void testReduceNot() {
     HepProgramBuilder builder = new HepProgramBuilder();
     builder.addRuleClass(ReduceExpressionsRule.class);
