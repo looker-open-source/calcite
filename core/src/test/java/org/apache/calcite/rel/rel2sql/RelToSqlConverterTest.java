@@ -250,30 +250,7 @@ class RelToSqlConverterTest {
     sql(query).ok(expected);
   }
 
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-4901">[CALCITE-4901]
-   * JDBC adapter incorrectly adds ORDER BY columns to the SELECT list</a>. */
-  @Test void testOrderByNotInSelectList() {
-    // Before 4901 was fixed, the generated query would have "product_id" in its
-    // SELECT clause.
-    String query = "select count(1) as c\n"
-        + "from \"foodmart\".\"product\"\n"
-        + "group by \"product_id\"\n"
-        + "order by \"product_id\" desc";
-    final String expected = "SELECT COUNT(*) AS \"C\"\n"
-        + "FROM \"foodmart\".\"product\"\n"
-        + "GROUP BY \"product_id\"\n"
-        + "ORDER BY \"product_id\" DESC";
-    sql(query).ok(expected);
-  }
-
-  /** Test case for
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-4321">[CALCITE-4321]
-   * JDBC adapter omits FILTER (WHERE ...) expressions when generating SQL</a>
-   * and
-   * <a href="https://issues.apache.org/jira/browse/CALCITE-5270">[CALCITE-5270]
-   * JDBC adapter should not generate FILTER (WHERE) in Firebolt dialect</a>. */
-  @Test void testAggregateFilterWhere() {
+  @Test void testAggregateFilterWhereToSqlFromProductTable() {
     String query = "select\n"
         + "  sum(\"shelf_width\") filter (where \"net_weight\" > 0),\n"
         + "  sum(\"shelf_width\")\n"
@@ -1608,7 +1585,7 @@ class RelToSqlConverterTest {
   @Test void testSelectQueryWithOrderByClause() {
     String query = "select \"product_id\" from \"product\"\n"
         + "order by \"net_weight\"";
-    final String expected = "SELECT \"product_id\"\n"
+    final String expected = "SELECT \"product_id\", \"net_weight\"\n"
         + "FROM \"foodmart\".\"product\"\n"
         + "ORDER BY \"net_weight\"";
     sql(query).ok(expected);
@@ -1626,7 +1603,8 @@ class RelToSqlConverterTest {
   @Test void testSelectQueryWithTwoOrderByClause() {
     String query = "select \"product_id\" from \"product\"\n"
         + "order by \"net_weight\", \"gross_weight\"";
-    final String expected = "SELECT \"product_id\"\n"
+    final String expected = "SELECT \"product_id\", \"net_weight\","
+        + " \"gross_weight\"\n"
         + "FROM \"foodmart\".\"product\"\n"
         + "ORDER BY \"net_weight\", \"gross_weight\"";
     sql(query).ok(expected);
@@ -1635,7 +1613,8 @@ class RelToSqlConverterTest {
   @Test void testSelectQueryWithAscDescOrderByClause() {
     String query = "select \"product_id\" from \"product\" "
         + "order by \"net_weight\" asc, \"gross_weight\" desc, \"low_fat\"";
-    final String expected = "SELECT \"product_id\"\n"
+    final String expected = "SELECT"
+        + " \"product_id\", \"net_weight\", \"gross_weight\", \"low_fat\"\n"
         + "FROM \"foodmart\".\"product\"\n"
         + "ORDER BY \"net_weight\", \"gross_weight\" DESC, \"low_fat\"";
     sql(query).ok(expected);
@@ -1675,8 +1654,9 @@ class RelToSqlConverterTest {
     // case4: wrap collation's info to numeric constant - rewrite it.
     relFn(relFn)
         .ok("SELECT \"JOB\", \"ENAME\"\n"
+            + "FROM (SELECT 1 AS \"$f0\", \"ENAME\", \"JOB\", '23' AS \"$f3\", 12 AS \"col1\", 34 AS \"$f5\"\n"
             + "FROM \"scott\".\"EMP\"\n"
-            + "ORDER BY '1', '23', '12', \"ENAME\", '34' DESC NULLS LAST")
+            + "ORDER BY '1', '23', '12', \"ENAME\", '34' DESC NULLS LAST) AS \"t0\"")
         .dialect(nonOrdinalDialect())
         .ok("SELECT JOB, ENAME\n"
             + "FROM scott.EMP\n"
@@ -2783,13 +2763,13 @@ class RelToSqlConverterTest {
   @Test void testSelectQueryWithLimitOffsetClause() {
     String query = "select \"product_id\" from \"product\"\n"
         + "order by \"net_weight\" asc limit 100 offset 10";
-    final String expected = "SELECT \"product_id\"\n"
+    final String expected = "SELECT \"product_id\", \"net_weight\"\n"
         + "FROM \"foodmart\".\"product\"\n"
         + "ORDER BY \"net_weight\"\n"
         + "OFFSET 10 ROWS\n"
         + "FETCH NEXT 100 ROWS ONLY";
     // BigQuery uses LIMIT/OFFSET, and nulls sort low by default
-    final String expectedBigQuery = "SELECT product_id\n"
+    final String expectedBigQuery = "SELECT product_id, net_weight\n"
         + "FROM foodmart.product\n"
         + "ORDER BY net_weight IS NULL, net_weight\n"
         + "LIMIT 100\n"
@@ -6816,7 +6796,7 @@ class RelToSqlConverterTest {
               getPlanner(null, parserConfig, defaultSchema, config, librarySet, typeSystem);
           SqlNode parse = planner.parse(sql);
           SqlNode validate = planner.validate(parse);
-          rel = planner.rel(validate).project();
+          rel = planner.rel(validate).rel;
         }
         for (Function<RelNode, RelNode> transform : transforms) {
           rel = transform.apply(rel);
