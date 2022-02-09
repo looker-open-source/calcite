@@ -431,13 +431,7 @@ public class RelToSqlConverter extends SqlImplementor
 
   /** Visits a Project; called by {@link #dispatch} via reflection. */
   public Result visit(Project e) {
-    // If the input is a Sort, wrap SELECT is not required.
-    final Result x;
-    if (e.getInput() instanceof Sort) {
-      x = visitInput(e, 0);
-    } else {
-      x = visitInput(e, 0, Clause.SELECT);
-    }
+    final Result x = visitInput(e, 0, Clause.SELECT);
     parseCorrelTable(e, x);
     final Builder builder = x.builder(e);
     if (!isStar(e.getProjects(), e.getInput().getRowType(), e.getRowType())) {
