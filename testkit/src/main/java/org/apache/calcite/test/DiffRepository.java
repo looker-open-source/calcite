@@ -29,6 +29,8 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Assertions;
 import org.opentest4j.AssertionFailedError;
@@ -911,7 +913,17 @@ public class DiffRepository {
     DiffRepository toRepo() {
       final URL refFile = findFile(clazz, ".xml");
       final String refFilePath = Sources.of(refFile).file().getAbsolutePath();
-      final String logFilePath = refFilePath.replace(".xml", "_actual.xml");
+      final String logFilePath;
+      if (StringUtils.containsIgnoreCase(refFilePath, ".jar!")) {
+        // If the file is located in a JAR, we cannot write the file in place
+        // so we add it to the /tmp directory
+        // the expected output is /tmp/[jarname]/[path-to-file-in-jar/filename]_actual.xml
+        logFilePath = refFilePath.replaceAll(
+            ".*\\/(.*)\\.jar\\!(.*)\\.xml",
+            "/tmp/$1$2_actual.xml");
+      } else {
+        logFilePath = refFilePath.replace(".xml", "_actual.xml");
+      }
       final File logFile = new File(logFilePath);
       assert !refFilePath.equals(logFile.getAbsolutePath());
       return new DiffRepository(refFile, logFile, baseRepository, filter,
