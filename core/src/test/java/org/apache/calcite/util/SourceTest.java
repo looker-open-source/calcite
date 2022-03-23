@@ -16,7 +16,11 @@
  */
 package org.apache.calcite.util;
 
+import org.apache.calcite.test.DiffRepository;
+
 import com.google.common.io.CharSource;
+
+import net.hydromatic.foodmart.queries.FoodmartQuerySet;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -26,9 +30,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +48,8 @@ import static org.apache.calcite.util.Sources.file;
 import static org.apache.calcite.util.Sources.of;
 import static org.apache.calcite.util.Sources.url;
 
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -119,6 +130,41 @@ class SourceTest {
     //        at java.base/sun.nio.fs.UnixPath.encode(UnixPath.java:145)
     assertEquals(absoluteFile.getAbsolutePath(), url.toURI().getSchemeSpecificPart(),
         () -> "Sources.of(Sources.of(file(" + path + ").absolutePath).url()).file().getPath()");
+  }
+
+  /** Test case for
+   * <a href="https://issues.apache.org/jira/browse/CALCITE-5052">[CALCITE-5052]
+   * Allow Source based on a URL with jar: protocol</a>. */
+  @Test void testJarFileUrl() throws MalformedURLException {
+    // mock jar file
+    final String jarPath = "jar:file:sources!/abcdef.txt";
+    final URL url = new URL(jarPath);
+    final Source source = of(url);
+    assertThat("No file retrieved for Sources.of(file " + jarPath + ")",
+        source.file(), notNullValue());
+    assertThat("Sources.of(file " + jarPath + ").url()).file().getPath()",
+        slashify(source.file().getPath()),
+        is("sources!/abcdef.txt"));
+
+  }
+
+  /** Tests {@link Sources#of(URL)} with code similar to
+   * {@code DiffRepository.Key#toRepo()}. */
+  @Disabled // Open we are ready to fix this
+  @Test void testJarFileUrlWrite() {
+    final URL refFile = FoodmartQuerySet.class.getResource("/queries.json");
+    assertThat(refFile, notNullValue());
+    final Source source = of(refFile);
+    final String refFilePath = source.file().getAbsolutePath();
+    final String logFilePath = refFilePath.replace(".json", "_actual.json");
+    final File logFile = new File(logFilePath);
+    assertThat(refFile, not(is(logFile.getAbsolutePath())));
+    try (FileWriter fw = new FileWriter(logFile);
+         PrintWriter pw = new PrintWriter(fw)) {
+      pw.println("hello, world!");
+    } catch (IOException e) {
+      throw Util.throwAsRuntime(e);
+    }
   }
 
   @Test void testAppendWithSpaces() {
