@@ -154,7 +154,8 @@ class SourceTest {
     final Source source = of(refFile);
     final String refFilePath = source.file().getAbsolutePath();
     final String logFilePath;
-    if (StringUtils.containsIgnoreCase(".jar!", refFilePath)) {
+    assertThat(StringUtils.containsIgnoreCase(refFilePath, ".jar!"), is(true));
+    if (StringUtils.containsIgnoreCase(refFilePath, ".jar!")) {
       // If the file is located in a JAR, we cannot write the file in place
       // so we add it to the /tmp directory
       // the expected output is /tmp/[jarname]/[path-to-file-in-jar/filename]_actual.json

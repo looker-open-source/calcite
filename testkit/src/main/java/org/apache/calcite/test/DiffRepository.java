@@ -898,7 +898,7 @@ public class DiffRepository {
       final URL refFile = findFile(clazz, ".xml");
       final String refFilePath = Sources.of(refFile).file().getAbsolutePath();
       final String logFilePath;
-      if (StringUtils.containsIgnoreCase(".jar!", refFilePath)) {
+      if (StringUtils.containsIgnoreCase(refFilePath, ".jar!")) {
         // If the file is located in a JAR, we cannot write the file in place
         // so we add it to the /tmp directory
         // the expected output is /tmp/[jarname]/[path-to-file-in-jar/filename]_actual.xml
