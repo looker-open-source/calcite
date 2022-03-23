@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.util;
 
-import org.apache.calcite.test.DiffRepository;
-
 import com.google.common.io.CharSource;
 
 import net.hydromatic.foodmart.queries.FoodmartQuerySet;
@@ -30,8 +28,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
