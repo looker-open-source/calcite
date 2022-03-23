@@ -20,6 +20,8 @@ import com.google.common.io.CharSource;
 
 import net.hydromatic.foodmart.queries.FoodmartQuerySet;
 
+import org.apache.commons.lang3.StringUtils;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -146,15 +148,26 @@ class SourceTest {
 
   /** Tests {@link Sources#of(URL)} with code similar to
    * {@code DiffRepository.Key#toRepo()}. */
-  @Disabled // Open we are ready to fix this
   @Test void testJarFileUrlWrite() {
     final URL refFile = FoodmartQuerySet.class.getResource("/queries.json");
     assertThat(refFile, notNullValue());
     final Source source = of(refFile);
     final String refFilePath = source.file().getAbsolutePath();
-    final String logFilePath = refFilePath.replace(".json", "_actual.json");
+    final String logFilePath;
+    if (StringUtils.containsIgnoreCase(".jar!", refFilePath)) {
+      // If the file is located in a JAR, we cannot write the file in place
+      // so we add it to the /tmp directory
+      // the expected output is /tmp/[jarname]/[path-to-file-in-jar/filename]_actual.json
+      logFilePath = refFilePath.replaceAll(
+          ".*\\/(.*)\\.jar\\!(.*)\\.json",
+          "/tmp/$1$2_actual.json");
+    } else {
+      logFilePath = refFilePath.replace(".json", "_actual.json");
+    }
     final File logFile = new File(logFilePath);
     assertThat(refFile, not(is(logFile.getAbsolutePath())));
+    boolean b = logFile.getParentFile().mkdirs();
+    Util.discard(b);
     try (FileWriter fw = new FileWriter(logFile);
          PrintWriter pw = new PrintWriter(fw)) {
       pw.println("hello, world!");
