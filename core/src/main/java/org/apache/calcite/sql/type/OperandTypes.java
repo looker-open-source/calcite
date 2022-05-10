@@ -263,6 +263,46 @@ public abstract class OperandTypes {
     }
   }
 
+  /** Creates a CompositeOperandTypeChecker. Outside this package, use
+   * {@link SqlSingleOperandTypeChecker#and(SqlSingleOperandTypeChecker)},
+   * {@link OperandTypes#and}, {@link OperandTypes#or} and similar. */
+  static SqlOperandTypeChecker composite(
+      CompositeOperandTypeChecker.Composition composition,
+      List<? extends SqlOperandTypeChecker> allowedRules,
+      @Nullable String allowedSignatures,
+      @Nullable SqlOperandCountRange range) {
+    final List<SqlOperandTypeChecker> list = new ArrayList<>(allowedRules);
+    switch (composition) {
+    default:
+      break;
+    case AND:
+    case OR:
+      flatten(list, c -> c instanceof CompositeOperandTypeChecker
+          && ((CompositeOperandTypeChecker) c).composition == composition
+          ? ((CompositeOperandTypeChecker) c).getRules()
+          : null);
+    }
+    if (list.size() == 1) {
+      return list.get(0);
+    }
+    return new CompositeOperandTypeChecker(composition,
+        ImmutableList.copyOf(list), allowedSignatures, range);
+  }
+
+  /** Helper for {@link #compositeSingle} and {@link #composite}. */
+  private static <E> void flatten(List<E> list,
+      Function<E, @Nullable List<? extends E>> expander) {
+    for (int i  = 0; i < list.size();) {
+      @Nullable List<? extends E> list2 = expander.apply(list.get(i));
+      if (list2 == null) {
+        ++i;
+      } else {
+        list.remove(i);
+        list.addAll(i, list2);
+      }
+    }
+  }
+
   // ----------------------------------------------------------------------
   // SqlOperandTypeChecker definitions
   // ----------------------------------------------------------------------
