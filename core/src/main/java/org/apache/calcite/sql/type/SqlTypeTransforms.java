@@ -207,15 +207,6 @@ public abstract class SqlTypeTransforms {
       (opBinding, typeToTransform) ->
           ((MeasureSqlType) typeToTransform).types.get(0);
 
-  /**
-   * Parameter type-inference transform strategy that wraps a given type in an array or
-   * wraps a field of the given type in an array if the given type is struct with one field.
-   * It is used when an array input is a sub-query.
-   */
-  public static final SqlTypeTransform TO_ARRAY_QUERY =
-      (opBinding, typeToTransform) ->
-        TO_ARRAY.transformType(opBinding,
-            SqlTypeUtil.deriveCollectionQueryComponentType(SqlTypeName.ARRAY, typeToTransform));
 
   /**
    * Parameter type-inference transform strategy that converts a two-field

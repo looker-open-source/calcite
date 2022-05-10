@@ -4440,7 +4440,7 @@ public class SqlToRelConverter {
       lastList = new ArrayList<>();
       relBuilder.push(
           Collect.create(requireNonNull(input, "input"),
-              call.getKind(), castNonNull(validator().deriveAlias(call, i))));
+              typeName, SqlValidatorUtil.alias(call, i)));
       joinList.add(relBuilder.build());
     }
 
