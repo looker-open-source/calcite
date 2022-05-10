@@ -14,26 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.calcite.sql.fun;
+package org.apache.calcite.sql.type;
 
-import org.apache.calcite.sql.SqlFunction;
-import org.apache.calcite.sql.SqlFunctionCategory;
-import org.apache.calcite.sql.SqlKind;
-import org.apache.calcite.sql.type.OperandTypes;
-import org.apache.calcite.sql.type.ReturnTypes;
-import org.apache.calcite.sql.type.SqlTypeFamily;
-import org.apache.calcite.sql.type.SqlTypeTransforms;
+import org.apache.calcite.rel.type.RelDataType;
+
+import com.google.common.collect.ImmutableList;
 
 /**
- * The <code>JSON_LENGTH</code> function.
+ * Measure SQL type.
+ *
+ * <p>The type serves as a tag that the measure must be expanded
+ * into an expression before use.
  */
-public class SqlJsonLengthFunction extends SqlFunction {
-  public SqlJsonLengthFunction() {
-    super("JSON_LENGTH", SqlKind.OTHER_FUNCTION,
-        ReturnTypes.INTEGER.andThen(SqlTypeTransforms.FORCE_NULLABLE),
-        null,
-        OperandTypes.ANY.or(
-            OperandTypes.family(SqlTypeFamily.ANY, SqlTypeFamily.CHARACTER)),
-        SqlFunctionCategory.SYSTEM);
+public class MeasureSqlType extends ApplySqlType {
+  /** Private constructor. */
+  private MeasureSqlType(RelDataType elementType, boolean isNullable) {
+    super(SqlTypeName.MEASURE, isNullable, ImmutableList.of(elementType));
+    computeDigest();
+  }
+
+  /** Creates a MeasureSqlType. */
+  static MeasureSqlType create(RelDataType elementType) {
+    return new MeasureSqlType(elementType, elementType.isNullable());
   }
 }
