@@ -207,7 +207,6 @@ public abstract class SqlTypeTransforms {
       (opBinding, typeToTransform) ->
           ((MeasureSqlType) typeToTransform).types.get(0);
 
-
   /**
    * Parameter type-inference transform strategy that converts a two-field
    * record type to a MAP type.
