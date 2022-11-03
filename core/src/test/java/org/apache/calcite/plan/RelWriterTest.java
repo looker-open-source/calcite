@@ -54,6 +54,7 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.SqlExplainFormat;
 import org.apache.calcite.sql.SqlExplainLevel;
 import org.apache.calcite.sql.SqlIntervalQualifier;
+import org.apache.calcite.sql.fun.SqlLibraryOperators;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.fun.SqlTrimFunction;
 import org.apache.calcite.sql.parser.SqlParserPos;
@@ -916,6 +917,27 @@ class RelWriterTest {
         () -> deserializeAndDumpToTextFormat(getSchema(rel), relJson),
         "org.apache.calcite.runtime.CalciteException: "
             + "No operator for 'MAXS' with kind: 'MAX', syntax: 'FUNCTION' during JSON deserialization");
+  }
+
+  @Test void testDeserializeNonStandardOperator() {
+    final FrameworkConfig config = RelBuilderTest.config().build();
+    final RelBuilder builder = RelBuilder.create(config);
+    final RelNode rel = builder
+        .scan("EMP")
+        .project(
+            builder.field("JOB"),
+            // `CURRENT_DATETIME` is an operator from SqlLibrary.BIG_QUERY.
+            // Prior to CALCITE-5349 non-standard operators would throw during deserialization.
+            builder.call(SqlLibraryOperators.CURRENT_DATETIME))
+        .build();
+    final RelJsonWriter jsonWriter = new RelJsonWriter();
+    rel.explain(jsonWriter);
+    String relJson = jsonWriter.asString();
+    String result = deserializeAndDumpToTextFormat(getSchema(rel), relJson);
+    final String expected = ""
+        + "LogicalProject(JOB=[$2], $f1=[CURRENT_DATETIME()])\n"
+        + "  LogicalTableScan(table=[[scott, EMP]])\n";
+    assertThat(result, isLinux(expected));
   }
 
   @Test void testAggregateWithoutAlias() {
