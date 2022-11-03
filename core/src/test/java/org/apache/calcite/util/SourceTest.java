@@ -16,13 +16,11 @@
  */
 package org.apache.calcite.util;
 
-import org.apache.calcite.test.DiffRepository;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.io.CharSource;
 
 import net.hydromatic.foodmart.queries.FoodmartQuerySet;
-
-import org.apache.commons.lang3.StringUtils;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

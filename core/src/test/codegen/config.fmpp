@@ -31,6 +31,7 @@ data: {
       "org.apache.calcite.sql.ddl.SqlDdlNodes"
       "org.apache.calcite.sql.parser.parserextensiontesting.SqlCreateTable",
       "org.apache.calcite.sql.parser.parserextensiontesting.SqlUploadJarNode"
+      "org.apache.calcite.sql.SqlAlienSystemTypeNameSpec"
     ]
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
@@ -38,6 +39,11 @@ data: {
     keywords: [
       "UPLOAD"
       "JAR"
+      "STRING"
+      "INT64"
+      "FLOAT64"
+      "BOOL"
+      "BYTES"
     ]
 
     # List of methods for parsing custom SQL statements.
@@ -60,6 +66,10 @@ data: {
     createStatementParserMethods: [
       "SqlCreateTable"
       "SqlCreateView"
+    ]
+
+    dataTypeParserMethods: [
+      "BigQuerySqlTypeNames()"
     ]
 
     # List of files in @includes directory that have parser method
