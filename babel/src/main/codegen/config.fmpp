@@ -31,11 +31,20 @@ data: {
       "org.apache.calcite.sql.babel.SqlBabelCreateTable",
       "org.apache.calcite.sql.babel.TableCollectionType",
       "org.apache.calcite.sql.ddl.SqlDdlNodes",
+      # TODO(CALCITE-5346) BQ specific
+      "org.apache.calcite.sql.SqlAlienSystemTypeNameSpec",
     ]
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
     # not a reserved keyword, add it to the 'nonReservedKeywords' section.
     keywords: [
+      # TODO(CALCITE-5346) BQ specific
+      "STRING"
+      "BYTES"
+      "FLOAT64"
+      "BOOL"
+      "INT64"
+
       "IF"
       "SEMI"
       "VOLATILE"
@@ -44,6 +53,13 @@ data: {
     # List of non-reserved keywords to add;
     # items in this list become non-reserved
     nonReservedKeywordsToAdd: [
+      # TODO(CALCITE-5346) BQ specific
+      "STRING"
+      "BYTES"
+      "FLOAT64"
+      "BOOL"
+      "INT64"
+
       # not in core, added in babel
       "IF"
       "SEMI"
@@ -555,6 +571,14 @@ data: {
     extraBinaryExpressions: [
       "InfixCast"
       "NullSafeEqual"
+    ]
+
+    # List of methods for parsing custom data types.
+    # Return type of method implementation should be "SqlTypeNameSpec".
+    # Example: SqlParseTimeStampZ().
+    dataTypeParserMethods: [
+      # TODO(CALCITE-5346) BQ specific
+      "BigQuerySqlTypeNames()"
     ]
 
     # List of files in @includes directory that have parser method

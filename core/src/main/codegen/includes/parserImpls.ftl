@@ -39,7 +39,7 @@
 * We'll want to replace this with a more generic solution at some point but this
 * satisfies our immediate need. This fix-up should not be merged upstream.
 *
-* For tracking https://issues.apache.org/jira/browse/CALCITE-5346
+* TODO(CALCITE-5346)
 */
 SqlTypeNameSpec BigQuerySqlTypeNames() :
 {

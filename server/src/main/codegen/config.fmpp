@@ -30,11 +30,20 @@ data: {
       "org.apache.calcite.sql.SqlCreate"
       "org.apache.calcite.sql.SqlDrop"
       "org.apache.calcite.sql.ddl.SqlDdlNodes"
+      # TODO(CALCITE-5346) BQ specific
+      "org.apache.calcite.sql.SqlAlienSystemTypeNameSpec"
     ]
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
     # not a reserved keyword, add it to the 'nonReservedKeywords' section.
     keywords: [
+      # TODO(CALCITE-5346) BQ specific
+      "STRING"
+      "BYTES"
+      "FLOAT64"
+      "BOOL"
+      "INT64"
+
       "IF"
       "MATERIALIZED"
       "STORED"
@@ -80,6 +89,14 @@ data: {
       "SqlDropType"
       "SqlDropView"
       "SqlDropFunction"
+    ]
+
+    # List of methods for parsing custom data types.
+    # Return type of method implementation should be "SqlTypeNameSpec".
+    # Example: SqlParseTimeStampZ().
+    dataTypeParserMethods: [
+      # TODO(CALCITE-5346) BQ specific
+      "BigQuerySqlTypeNames()"
     ]
 
     # List of files in @includes directory that have parser method

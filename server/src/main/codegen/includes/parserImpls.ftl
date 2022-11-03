@@ -409,3 +409,51 @@ SqlDrop SqlDropFunction(Span s, boolean replace) :
         return SqlDdlNodes.dropFunction(s.end(this), ifExists, id);
     }
 }
+
+/**
+* A sql type name extended basic data type, it has a counterpart basic
+* sql type name but always represents as a special alias compared with the standard name.
+* We'll want to replace this with a more generic solution at some point but this
+* satisfies our immediate need. This fix-up should not be merged upstream.
+*
+* TODO(CALCITE-5346)
+*/
+SqlTypeNameSpec BigQuerySqlTypeNames() :
+{
+    final SqlTypeName typeName;
+    final String typeAlias;
+    int precision = -1;
+}
+{
+    (
+        <BOOL> {
+            typeName = SqlTypeName.BOOLEAN;
+            typeAlias = token.image;
+        }
+    |
+        <BYTES> {
+            typeName = SqlTypeName.VARBINARY;
+            typeAlias = token.image;
+            precision = Integer.MAX_VALUE;
+        }
+    |
+        <FLOAT64> {
+            typeName = SqlTypeName.DOUBLE;
+            typeAlias = token.image;
+        }
+    |
+        <INT64> {
+            typeName = SqlTypeName.BIGINT;
+            typeAlias = token.image;
+        }
+    |
+        <STRING> {
+            typeName = SqlTypeName.VARCHAR;
+            typeAlias = token.image;
+            precision = Integer.MAX_VALUE;
+        }
+    )
+    {
+        return new SqlAlienSystemTypeNameSpec(typeAlias, typeName, precision, getPos());
+    }
+}
