@@ -31,6 +31,7 @@ data: {
       "org.apache.calcite.sql.ddl.SqlDdlNodes"
       "org.apache.calcite.sql.parser.parserextensiontesting.SqlCreateTable",
       "org.apache.calcite.sql.parser.parserextensiontesting.SqlUploadJarNode"
+      "org.apache.calcite.sql.SqlAlienSystemTypeNameSpec"
     ]
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
