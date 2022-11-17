@@ -39,11 +39,6 @@ data: {
     keywords: [
       "UPLOAD"
       "JAR"
-      "STRING"
-      "INT64"
-      "FLOAT64"
-      "BOOL"
-      "BYTES"
     ]
 
     # List of methods for parsing custom SQL statements.
@@ -66,10 +61,6 @@ data: {
     createStatementParserMethods: [
       "SqlCreateTable"
       "SqlCreateView"
-    ]
-
-    dataTypeParserMethods: [
-      "BigQuerySqlTypeNames()"
     ]
 
     # List of files in @includes directory that have parser method

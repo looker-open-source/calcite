@@ -26,23 +26,10 @@ parser: {
   # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
   # not a reserved keyword, add it to the 'nonReservedKeywords' section.
   keywords: [
-    # TODO(CALCITE-5346) BQ specific
-    "STRING"
-    "BYTES"
-    "FLOAT64"
-    "BOOL"
-    "INT64"
   ]
 
   # List of keywords from "keywords" section that are not reserved.
   nonReservedKeywords: [
-    # TODO(CALCITE-5346) BQ specific
-    "STRING"
-    "BYTES"
-    "FLOAT64"
-    "BOOL"
-    "INT64"
-
     "A"
     "ABSENT"
     "ABSOLUTE"
@@ -400,8 +387,6 @@ parser: {
   # Return type of method implementation should be "SqlTypeNameSpec".
   # Example: SqlParseTimeStampZ().
   dataTypeParserMethods: [
-     # TODO(CALCITE-5346) BQ specific
-    "BigQuerySqlTypeNames()"
   ]
 
   # List of methods for parsing builtin function calls.
@@ -444,7 +429,6 @@ parser: {
   # "dataTypeParserMethods".
   # Example: "parserImpls.ftl".
   implementationFiles: [
-    "parserImpls.ftl"
   ]
 
   includePosixOperators: false

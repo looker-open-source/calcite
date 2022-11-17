@@ -1776,40 +1776,6 @@ class RelToSqlConverterTest {
     sql(timeTrunc).withLibrary(SqlLibrary.BIG_QUERY).ok(expectedTimeTrunc);
   }
 
-  /**
-   * Test casts to BQ specific datatypes. To make this work we added an extension
-   * to the base parser in Parser.jj. We'll want to replace this with a more
-   * generic solution at some point but this satisfies our immediate need.
-   *
-   * For tracking https://issues.apache.org/jira/browse/CALCITE-5346
-   */
-  @Test void testBigQueryDataTypes() {
-    final String int64 = "select cast(34.55 as INT64)\n"
-        + "from \"foodmart\".\"product\"\n";
-    final String expectedInt64 = "SELECT 34\n"
-        + "FROM \"foodmart\".\"product\"";
-
-    final String float64 = "select cast(34.1 as float64)\n"
-        + "from \"foodmart\".\"product\"\n";
-    final String expectedFloat64 = "SELECT 34.1\n"
-        + "FROM \"foodmart\".\"product\"";
-
-    final String bool = "select cast(0 as bool)\n"
-        + "from \"foodmart\".\"product\"\n";
-    final String expectedBool = "SELECT FALSE\n"
-        + "FROM \"foodmart\".\"product\"";
-
-    final String s = "select cast(4 as string)\n"
-        + "from \"foodmart\".\"product\"\n";
-    final String expectedString = "SELECT '4'\n"
-        + "FROM \"foodmart\".\"product\"";
-
-    sql(int64).withLibrary(SqlLibrary.BIG_QUERY).ok(expectedInt64);
-    sql(float64).withLibrary(SqlLibrary.BIG_QUERY).ok(expectedFloat64);
-    sql(bool).withLibrary(SqlLibrary.BIG_QUERY).ok(expectedBool);
-    sql(s).withLibrary(SqlLibrary.BIG_QUERY).ok(expectedString);
-  }
-
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-3220">[CALCITE-3220]
    * HiveSqlDialect should transform the SQL-standard TRIM function to TRIM,
