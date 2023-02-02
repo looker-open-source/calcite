@@ -16,21 +16,30 @@
  */
 package org.apache.calcite.sql.fun;
 
+import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlCallBinding;
+import org.apache.calcite.sql.SqlCharStringLiteral;
+import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlFunction;
 import org.apache.calcite.sql.SqlFunctionCategory;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlOperandCountRange;
 import org.apache.calcite.sql.SqlOperator;
+import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.dialect.BigQuerySqlDialect;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlOperandCountRanges;
 import org.apache.calcite.sql.type.SqlOperandTypeChecker;
 import org.apache.calcite.sql.type.SqlTypeFamily;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.util.format.FormatElement;
 import org.apache.calcite.util.format.FormatModels;
 
+import com.google.common.collect.ImmutableBiMap;
+
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import static org.apache.calcite.sql.type.SqlTypeName.DATE;
 import static org.apache.calcite.sql.type.SqlTypeName.TIME;
@@ -116,6 +125,37 @@ public class SqlBigQueryFormatDatetimeFunction extends SqlFunction {
    */
   public SqlTypeName getType() {
     return this.typeName;
+  }
+
+  private String getFormatStringForDialect(SqlDialect dialect, String fmtString) {
+    // get the inverse of the parse map for a dialect.
+    final Map<FormatElement, String> elementToStringMap = ImmutableBiMap.copyOf(
+        dialect.getFormatElementMap()).inverse();
+    final StringBuilder buf = new StringBuilder();
+    // substring to remove enclosing quotes
+    final List<FormatElement> parsedElements =
+        BQ_FORMAT_MODEL.parse(fmtString.substring(1, fmtString.length() - 1));
+    parsedElements.forEach(ele -> {
+      // call flatten in case of composite elements
+      ele.flatten(e -> buf.append(elementToStringMap.getOrDefault(e, e.toString())));
+    });
+    return dialect.quoteStringLiteral(buf.toString());
+  }
+
+  @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+    final SqlDialect dialect = writer.getDialect();
+    if (dialect.getClass() == BigQuerySqlDialect.class) {
+      super.unparse(writer, call, leftPrec, rightPrec);
+      return;
+    }
+    if (call.operand(0).getClass() != SqlCharStringLiteral.class) {
+      dialect.unparseDatetimeFormat(writer, call, this.typeName, /*fmtString=*/null, leftPrec,
+          rightPrec);
+    } else {
+      final String fmtString = call.operand(0).toString();
+      dialect.unparseDatetimeFormat(writer, call, this.typeName,
+          getFormatStringForDialect(dialect, fmtString), leftPrec, rightPrec);
+    }
   }
 
   /**

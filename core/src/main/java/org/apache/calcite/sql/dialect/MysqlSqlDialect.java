@@ -16,6 +16,26 @@
  */
 package org.apache.calcite.sql.dialect;
 
+import static org.apache.calcite.util.format.FormatElementEnum.D;
+import static org.apache.calcite.util.format.FormatElementEnum.DAY;
+import static org.apache.calcite.util.format.FormatElementEnum.DD;
+import static org.apache.calcite.util.format.FormatElementEnum.DDD;
+import static org.apache.calcite.util.format.FormatElementEnum.DY;
+import static org.apache.calcite.util.format.FormatElementEnum.HH24;
+import static org.apache.calcite.util.format.FormatElementEnum.IW;
+import static org.apache.calcite.util.format.FormatElementEnum.MI;
+import static org.apache.calcite.util.format.FormatElementEnum.MM;
+import static org.apache.calcite.util.format.FormatElementEnum.MON;
+import static org.apache.calcite.util.format.FormatElementEnum.MONTH;
+import static org.apache.calcite.util.format.FormatElementEnum.SS;
+import static org.apache.calcite.util.format.FormatElementEnum.WW;
+import static org.apache.calcite.util.format.FormatElementEnum.YYYY;
+
+import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.avatica.util.TimeUnitRange;
@@ -49,6 +69,8 @@ import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlTypeName;
 
 import com.google.common.collect.ImmutableList;
+
+import org.apache.calcite.util.format.FormatElement;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -88,6 +110,24 @@ public class MysqlSqlDialect extends SqlDialect {
   /** MySQL specific function. */
   public static final SqlFunction ISNULL_FUNCTION =
       SqlBasicFunction.create("ISNULL", ReturnTypes.BOOLEAN, OperandTypes.ANY);
+
+  public static final Map<String, FormatElement> MYSQL_FORMAT_ELEMENT_MAP =
+      new ImmutableMap.Builder()
+          .put("%w", D)
+          .put("%W", DAY)
+          .put("%d", DD)
+          .put("%j", DDD)
+          .put("%a", DY)
+          .put("%k", HH24)
+          .put("%V", IW)
+          .put("%i", MI)
+          .put("%m", MM)
+          .put("%b", MON)
+          .put("%M", MONTH)
+          .put("%S", SS)
+          .put("%v", WW)
+          .put("%Y", YYYY)
+          .build();
 
   private final int majorVersion;
 
@@ -214,6 +254,24 @@ public class MysqlSqlDialect extends SqlDialect {
     LOGGER.debug("SINGLE_VALUE rewritten into [{}]", caseExpr);
 
     return caseExpr;
+  }
+
+  @Override
+  public Map<String, FormatElement> getFormatElementMap() {
+    return MYSQL_FORMAT_ELEMENT_MAP;
+  }
+
+  @Override public void unparseDatetimeFormat(SqlWriter writer, SqlCall call, SqlTypeName typeName,
+      @Nullable String fmtString, int leftPrec, int rightPrec) {
+    final SqlWriter.Frame frame = writer.startFunCall("DATE_FORMAT");
+    call.operand(1).unparse(writer, leftPrec, rightPrec);
+    writer.sep(",", true);
+    if (fmtString != null) {
+      writer.print(fmtString);
+    } else {
+      call.operand(0).unparse(writer, leftPrec, rightPrec);
+    }
+    writer.endFunCall(frame);
   }
 
   @Override public void unparseCall(SqlWriter writer, SqlCall call,
