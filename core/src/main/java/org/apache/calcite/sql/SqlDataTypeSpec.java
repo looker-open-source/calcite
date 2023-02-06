@@ -230,7 +230,11 @@ public class SqlDataTypeSpec extends SqlNode {
    */
   public RelDataType deriveType(SqlValidator validator, boolean nullable) {
     RelDataType type;
-    type = typeNameSpec.deriveType(validator);
+    // check if the type name is being used as an alias before calling `deriveType`
+    type = validator.getCatalogReader().getNamedType(typeNameSpec.getTypeName());
+    if (type == null) {
+      type = typeNameSpec.deriveType(validator);
+    }
 
     // Fix-up the nullability, default is false.
     final RelDataTypeFactory typeFactory = validator.getTypeFactory();
