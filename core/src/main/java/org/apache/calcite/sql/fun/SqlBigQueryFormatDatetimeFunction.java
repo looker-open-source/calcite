@@ -144,7 +144,7 @@ public class SqlBigQueryFormatDatetimeFunction extends SqlFunction {
 
   @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
     final SqlDialect dialect = writer.getDialect();
-    if (dialect.getClass() == BigQuerySqlDialect.class) {
+    if (BigQuerySqlDialect.class.isAssignableFrom(dialect.getClass())) {
       super.unparse(writer, call, leftPrec, rightPrec);
       return;
     }

@@ -16,26 +16,6 @@
  */
 package org.apache.calcite.sql.dialect;
 
-import static org.apache.calcite.util.format.FormatElementEnum.D;
-import static org.apache.calcite.util.format.FormatElementEnum.DAY;
-import static org.apache.calcite.util.format.FormatElementEnum.DD;
-import static org.apache.calcite.util.format.FormatElementEnum.DDD;
-import static org.apache.calcite.util.format.FormatElementEnum.DY;
-import static org.apache.calcite.util.format.FormatElementEnum.HH24;
-import static org.apache.calcite.util.format.FormatElementEnum.IW;
-import static org.apache.calcite.util.format.FormatElementEnum.MI;
-import static org.apache.calcite.util.format.FormatElementEnum.MM;
-import static org.apache.calcite.util.format.FormatElementEnum.MON;
-import static org.apache.calcite.util.format.FormatElementEnum.MONTH;
-import static org.apache.calcite.util.format.FormatElementEnum.SS;
-import static org.apache.calcite.util.format.FormatElementEnum.WW;
-import static org.apache.calcite.util.format.FormatElementEnum.YYYY;
-
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableMap;
-
-import java.util.Map;
-
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.TimeUnit;
 import org.apache.calcite.avatica.util.TimeUnitRange;
@@ -67,14 +47,31 @@ import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
 import org.apache.calcite.sql.type.SqlTypeName;
+import org.apache.calcite.util.format.FormatElement;
 
 import com.google.common.collect.ImmutableList;
-
-import org.apache.calcite.util.format.FormatElement;
+import com.google.common.collect.ImmutableMap;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.util.List;
+import java.util.Map;
+
+import static org.apache.calcite.util.format.FormatElementEnum.D;
+import static org.apache.calcite.util.format.FormatElementEnum.DAY;
+import static org.apache.calcite.util.format.FormatElementEnum.DD;
+import static org.apache.calcite.util.format.FormatElementEnum.DDD;
+import static org.apache.calcite.util.format.FormatElementEnum.DY;
+import static org.apache.calcite.util.format.FormatElementEnum.HH24;
+import static org.apache.calcite.util.format.FormatElementEnum.IW;
+import static org.apache.calcite.util.format.FormatElementEnum.MI;
+import static org.apache.calcite.util.format.FormatElementEnum.MM;
+import static org.apache.calcite.util.format.FormatElementEnum.MON;
+import static org.apache.calcite.util.format.FormatElementEnum.MONTH;
+import static org.apache.calcite.util.format.FormatElementEnum.SS;
+import static org.apache.calcite.util.format.FormatElementEnum.WW;
+import static org.apache.calcite.util.format.FormatElementEnum.YY;
+import static org.apache.calcite.util.format.FormatElementEnum.YYYY;
 
 /**
  * A <code>SqlDialect</code> implementation for the MySQL database.
@@ -126,6 +123,7 @@ public class MysqlSqlDialect extends SqlDialect {
           .put("%M", MONTH)
           .put("%S", SS)
           .put("%v", WW)
+          .put("%y", YY)
           .put("%Y", YYYY)
           .build();
 
@@ -256,8 +254,7 @@ public class MysqlSqlDialect extends SqlDialect {
     return caseExpr;
   }
 
-  @Override
-  public Map<String, FormatElement> getFormatElementMap() {
+  @Override public Map<String, FormatElement> getFormatElementMap() {
     return MYSQL_FORMAT_ELEMENT_MAP;
   }
 

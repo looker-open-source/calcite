@@ -16,8 +16,6 @@
  */
 package org.apache.calcite.sql;
 
-import java.util.HashMap;
-
 import org.apache.calcite.avatica.util.Casing;
 import org.apache.calcite.avatica.util.Quoting;
 import org.apache.calcite.avatica.util.TimeUnit;
