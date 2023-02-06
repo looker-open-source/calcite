@@ -32,10 +32,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -157,16 +156,16 @@ class SourceTest {
     // If the file is located in a JAR, we cannot write the file in place
     // so we add it to the /tmp directory
     // the expected output is /tmp/[jarname]/[path-to-file-in-jar/filename]_actual.json
-    logFilePath = refFilePath.replaceAll(
+    logFilePath = refFilePath.replace(
             ".*\\/(.*)\\.jar\\!(.*)\\.json",
             "/tmp/$1$2_actual.json");
     final File logFile = new File(logFilePath);
     assertThat(refFile, not(is(logFile.getAbsolutePath())));
     boolean b = logFile.getParentFile().mkdirs();
     Util.discard(b);
-    try (FileWriter fw = new FileWriter(logFile);
-         PrintWriter pw = new PrintWriter(fw)) {
-      pw.println("hello, world!");
+    try  {
+      FileOutputStream fw = new FileOutputStream(logFilePath);
+      fw.write("hello, world!\n".getBytes(StandardCharsets.UTF_8));
     } catch (IOException e) {
       throw Util.throwAsRuntime(e);
     }
