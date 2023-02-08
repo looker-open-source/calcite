@@ -17,10 +17,14 @@
 package org.apache.calcite.sql.dialect;
 
 import org.apache.calcite.rel.type.RelDataTypeSystem;
+import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlIntervalLiteral;
 import org.apache.calcite.sql.SqlIntervalQualifier;
 import org.apache.calcite.sql.SqlWriter;
+import org.apache.calcite.sql.type.SqlTypeName;
+
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A <code>SqlDialect</code> implementation for the IBM DB2 database.
@@ -74,6 +78,19 @@ public class Db2SqlDialect extends SqlDialect {
       throw new AssertionError("Unsupported end unit: "
           + qualifier.timeUnitRange.endUnit);
     }
+  }
+
+  @Override public void unparseDatetimeFormat(SqlWriter writer, SqlCall call, SqlTypeName typeName,
+      @Nullable String fmtString, int leftPrec, int rightPrec) {
+    final SqlWriter.Frame frame = writer.startFunCall("VARCHAR_FORMAT");
+    call.operand(1).unparse(writer, leftPrec, rightPrec);
+    writer.sep(",", true);
+    if (fmtString != null) {
+      writer.print(fmtString);
+    } else {
+      call.operand(0).unparse(writer, leftPrec, rightPrec);
+    }
+    writer.endFunCall(frame);
   }
 
   @Override public void unparseSqlIntervalLiteral(SqlWriter writer,
