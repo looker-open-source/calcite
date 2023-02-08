@@ -37,6 +37,7 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.OperandTypes;
 import org.apache.calcite.sql.type.ReturnTypes;
+import org.apache.calcite.sql.type.SqlTypeName;
 
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -240,6 +241,19 @@ public class MssqlSqlDialect extends SqlDialect {
 
     call.operand(0).unparse(writer, leftPrec, rightPrec);
     writer.endList(frame);
+  }
+
+  @Override public void unparseDatetimeFormat(SqlWriter writer, SqlCall call, SqlTypeName typeName,
+      @Nullable String fmtString, int leftPrec, int rightPrec) {
+    final SqlWriter.Frame frame = writer.startFunCall("FORMAT");
+    call.operand(1).unparse(writer, leftPrec, rightPrec);
+    writer.sep(",", true);
+    if (fmtString != null) {
+      writer.print(fmtString);
+    } else {
+      call.operand(0).unparse(writer, leftPrec, rightPrec);
+    }
+    writer.endFunCall(frame);
   }
 
   @Override public void unparseSqlIntervalQualifier(SqlWriter writer,

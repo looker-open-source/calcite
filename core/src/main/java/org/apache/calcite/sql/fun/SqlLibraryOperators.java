@@ -788,6 +788,32 @@ public abstract class SqlLibraryOperators {
           OperandTypes.STRING_STRING,
           SqlFunctionCategory.TIMEDATE);
 
+  /** The "FORMAT_TIME(string, time)" function (BigQuery);
+   * Formats a time object according to the specified string. */
+  @LibraryOperator(libraries = {BIG_QUERY})
+  public static final SqlFunction FORMAT_TIME =
+      SqlBigQueryFormatDatetimeFunction.get(SqlTypeName.TIME);
+
+  /** The "FORMAT_DATE(string, date)" function (BigQuery);
+   * Formats a date object according to the specified string. */
+  @LibraryOperator(libraries = {BIG_QUERY})
+  public static final SqlFunction FORMAT_DATE =
+      SqlBigQueryFormatDatetimeFunction.get(SqlTypeName.DATE);
+
+  /** The "FORMAT_TIMESTAMP(string, timestamp)" function (BigQuery);
+   * Formats a timestamp object according to the specified string.
+   *
+   * <p>In BigQuery, the "TIMESTAMP" datatype maps to Calcite's TIMESTAMP_WITH_LOCAL_TIME_ZONE */
+  @LibraryOperator(libraries = {BIG_QUERY})
+  public static final SqlFunction FORMAT_TIMESTAMP =
+      SqlBigQueryFormatDatetimeFunction.get(SqlTypeName.TIMESTAMP_WITH_LOCAL_TIME_ZONE);
+
+  /** The "FORMAT_DATETIME(string, timestamp)" function (BigQuery);
+   * Formats a timestamp object according to the specified string. */
+  @LibraryOperator(libraries = {BIG_QUERY})
+  public static final SqlFunction FORMAT_DATETIME =
+      SqlBigQueryFormatDatetimeFunction.get(SqlTypeName.TIMESTAMP);
+
   /** The "TIMESTAMP_ADD(timestamp, interval)" function (BigQuery), the
    * two-argument variant of the built-in
    * {@link SqlStdOperatorTable#TIMESTAMP_ADD TIMESTAMPADD} function, which has

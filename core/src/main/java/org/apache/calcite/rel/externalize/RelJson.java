@@ -644,7 +644,7 @@ public class RelJson {
    * @param o JSON object
    * @return the transformed RexNode
    */
-  public RexNode toRex(RelOptCluster cluster, Object o) {
+  public @PolyNull RexNode toRex(RelOptCluster cluster, @PolyNull Object o) {
     RelInput input = new RelInputForCluster(cluster);
     return toRex(input, o);
   }

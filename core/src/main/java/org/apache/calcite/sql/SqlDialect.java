@@ -35,9 +35,12 @@ import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.parser.SqlParserPos;
 import org.apache.calcite.sql.type.AbstractSqlType;
+import org.apache.calcite.sql.type.SqlTypeName;
 import org.apache.calcite.sql.type.SqlTypeUtil;
 import org.apache.calcite.sql.validate.SqlConformance;
 import org.apache.calcite.sql.validate.SqlConformanceEnum;
+import org.apache.calcite.util.format.FormatElement;
+import org.apache.calcite.util.format.FormatElementEnum;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Suppliers;
@@ -54,6 +57,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -1000,6 +1004,39 @@ public class SqlDialect {
       offset.unparse(writer, -1, -1);
       writer.endList(offsetFrame);
     }
+  }
+
+  /**
+   * Returns a map of strings to {@link FormatElementEnum} entries.
+   *
+   * <p>Dialects may need to override this element mapping if they differ from
+   * <a
+   * href="https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Format-Models.html">
+   * Oracle's format elements.</a> By default this returns the value of
+   * {@link FormatElementEnum.ParseMap}
+   */
+  public Map<String, FormatElement> getFormatElementMap() {
+    return FormatElementEnum.ParseMap.getMap();
+  }
+
+  /**
+   * Prints the Oracle style {@code TO_CHAR(<datetime>, <string>)} to a {@link SqlWriter}.
+   *
+   * <p>Dialects may need to override this method if they use some other function name or
+   * operand ordering. A {@link SqlTypeName} is also provided if a dialect's format function is
+   * type sensitive.
+   */
+  public void unparseDatetimeFormat(SqlWriter writer, SqlCall call, SqlTypeName typeName,
+      @Nullable String fmtString, int leftPrec, int rightPrec) {
+    final SqlWriter.Frame frame = writer.startFunCall("TO_CHAR");
+    call.operand(1).unparse(writer, leftPrec, rightPrec);
+    writer.sep(",", true);
+    if (fmtString != null) {
+      writer.print(fmtString);
+    } else {
+      call.operand(0).unparse(writer, leftPrec, rightPrec);
+    }
+    writer.endFunCall(frame);
   }
 
   /**

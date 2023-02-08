@@ -5859,6 +5859,7 @@ SqlTypeNameSpec DateTimeTypeName() :
 {
     int precision = -1;
     SqlTypeName typeName;
+    SqlIdentifier userTimeType;
     boolean withLocalTimeZone = false;
     final Span s;
 }
@@ -5866,6 +5867,17 @@ SqlTypeNameSpec DateTimeTypeName() :
     <DATE> {
         typeName = SqlTypeName.DATE;
         return new SqlBasicTypeNameSpec(typeName, getPos());
+    }
+|
+    /**
+    * This is BAD. Find a way to map DATETIME to a user alias type. Because it
+    * is a recognized identifier but not listed here as a date type we get a
+    * parse error without this hack.
+    */
+    <DATETIME> {
+        s = span();
+        userTimeType = new SqlIdentifier(unquotedIdentifier(), getPos());
+        return new SqlUserDefinedTypeNameSpec(userTimeType, s.end(this));
     }
 |
     LOOKAHEAD(2)
