@@ -62,6 +62,7 @@ import static org.apache.calcite.util.format.FormatElementEnum.DAY;
 import static org.apache.calcite.util.format.FormatElementEnum.DD;
 import static org.apache.calcite.util.format.FormatElementEnum.DDD;
 import static org.apache.calcite.util.format.FormatElementEnum.DY;
+import static org.apache.calcite.util.format.FormatElementEnum.FF6;
 import static org.apache.calcite.util.format.FormatElementEnum.HH24;
 import static org.apache.calcite.util.format.FormatElementEnum.IW;
 import static org.apache.calcite.util.format.FormatElementEnum.MI;
@@ -115,6 +116,7 @@ public class MysqlSqlDialect extends SqlDialect {
           .put("%d", DD)
           .put("%j", DDD)
           .put("%a", DY)
+          .put("%f", FF6)
           .put("%k", HH24)
           .put("%V", IW)
           .put("%i", MI)
