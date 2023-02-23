@@ -2257,7 +2257,7 @@ SELECT TIMESTAMP_DIFF(TIMESTAMP "2018-08-14", TIMESTAMP "2018-10-14", DAY) AS ne
 
 # In this example, the result is 0 because only the number
 # of whole specified HOUR intervals are included.
-SELECT TIMESTAMP_DIFF("2001-02-01 01:00:00", "2001-02-01 00:00:01", HOUR) AS negative_diff;
+SELECT TIMESTAMP_DIFF("2001-02-01 01:00:00 UTC", "2001-02-01 00:00:01 UTC", HOUR) AS negative_diff;
 +---------------+
 | negative_diff |
 +---------------+
