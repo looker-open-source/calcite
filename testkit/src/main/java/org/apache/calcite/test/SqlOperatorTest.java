@@ -8970,8 +8970,8 @@ public class SqlOperatorTest {
     f.checkScalar("FORMAT_DATE('%x', DATE '2008-12-25')",
         "12/25/08",
         "VARCHAR(2000) NOT NULL");
-    f.checkScalar("FORMAT_DATE('The date is: %x', DATE '2008-12-25')",
-        "The date is: 12/25/08",
+    f.checkScalar("FORMAT_DATE('The date is: %x', DATE '2008-12-01')",
+        "The date is: 12/01/08",
         "VARCHAR(2000) NOT NULL");
   }
 
