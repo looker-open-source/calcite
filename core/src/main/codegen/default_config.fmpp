@@ -90,6 +90,7 @@ parser: {
     "DATETIME_INTERVAL_PRECISION"
     "DAYOFWEEK"
     "DAYOFYEAR"
+    "DATETIME_TRUNC"
     "DAYS"
     "DECADE"
     "DEFAULTS"
