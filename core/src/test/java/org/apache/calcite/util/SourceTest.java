@@ -16,13 +16,11 @@
  */
 package org.apache.calcite.util;
 
-import org.apache.calcite.test.DiffRepository;
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.io.CharSource;
 
 import net.hydromatic.foodmart.queries.FoodmartQuerySet;
-
-import org.apache.commons.lang3.StringUtils;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -156,8 +154,8 @@ class SourceTest {
     // If the file is located in a JAR, we cannot write the file in place
     // so we add it to the /tmp directory
     // the expected output is /tmp/[jarname]/[path-to-file-in-jar/filename]_actual.json
-    logFilePath = refFilePath.replace(
-            ".*\\/(.*)\\.jar\\!(.*)\\.json",
+    logFilePath =
+            refFilePath.replace(".*\\/(.*)\\.jar\\!(.*)\\.json",
             "/tmp/$1$2_actual.json");
     final File logFile = new File(logFilePath);
     assertThat(refFile, not(is(logFile.getAbsolutePath())));
