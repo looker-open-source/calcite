@@ -944,9 +944,7 @@ public class CalcitePrepareImpl implements CalcitePrepare {
         prepareContext.getRootSchema().plus(), statement);
   }
 
-  /** Holds state for the process of preparing a SQL statement.
-   *  Overload this class and {@link #createSqlValidator} to supply custom validation logic.
-   * */
+  /** Holds state for the process of preparing a SQL statement. */
   public static class CalcitePreparingStmt extends Prepare
       implements RelOptTable.ViewExpander {
     protected final RelOptPlanner planner;

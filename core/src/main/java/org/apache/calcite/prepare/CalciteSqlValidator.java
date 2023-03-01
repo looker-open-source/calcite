@@ -22,9 +22,7 @@ import org.apache.calcite.sql.SqlInsert;
 import org.apache.calcite.sql.SqlOperatorTable;
 import org.apache.calcite.sql.validate.SqlValidatorImpl;
 
-/** Validator.
- *  Public access-level to allow overriding and custom validation logic.
- * */
+/** Validator. */
 public class CalciteSqlValidator extends SqlValidatorImpl {
 
   public CalciteSqlValidator(SqlOperatorTable opTab,
