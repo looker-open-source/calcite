@@ -180,13 +180,13 @@ public class SqlValidatorFixture {
     return withValidatorConfig(c -> c.withLenientOperatorLookup(lenient));
   }
 
-  public SqlValidatorFixture withWhole(boolean whole) {
+  SqlValidatorFixture withWhole(boolean whole) {
     Preconditions.checkArgument(sap.cursor < 0);
     final StringAndPos sap = StringAndPos.of("^" + this.sap.sql + "^");
     return new SqlValidatorFixture(tester, factory, sap, expression, whole);
   }
 
-  public SqlValidatorFixture ok() {
+  SqlValidatorFixture ok() {
     tester.assertExceptionIsThrown(factory, toSql(false), null);
     return this;
   }
@@ -194,7 +194,7 @@ public class SqlValidatorFixture {
   /**
    * Checks that a SQL expression gives a particular error.
    */
-  public SqlValidatorFixture fails(String expected) {
+  SqlValidatorFixture fails(String expected) {
     requireNonNull(expected, "expected");
     tester.assertExceptionIsThrown(factory, toSql(true), expected);
     return this;
@@ -204,7 +204,7 @@ public class SqlValidatorFixture {
    * Checks that a SQL expression fails, giving an {@code expected} error,
    * if {@code b} is true, otherwise succeeds.
    */
-  public SqlValidatorFixture failsIf(boolean b, String expected) {
+  SqlValidatorFixture failsIf(boolean b, String expected) {
     if (b) {
       fails(expected);
     } else {
