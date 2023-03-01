@@ -528,7 +528,8 @@ public class CalcitePrepareImpl implements CalcitePrepare {
       Context context,
       Type elementType,
       CalciteCatalogReader catalogReader,
-      RelOptPlanner planner) {
+      RelOptPlanner planner
+  ){
     final JavaTypeFactory typeFactory = context.getTypeFactory();
     final EnumerableRel.Prefer prefer;
     if (elementType == Object[].class) {
@@ -611,7 +612,8 @@ public class CalcitePrepareImpl implements CalcitePrepare {
       Type elementType,
       long maxRowCount,
       CalciteCatalogReader catalogReader,
-      CalcitePreparingStmt preparingStmt) {
+      CalcitePreparingStmt preparingStmt
+      ) {
     final JavaTypeFactory typeFactory = context.getTypeFactory();
 
     final RelDataType x;
