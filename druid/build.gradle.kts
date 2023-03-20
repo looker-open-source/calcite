@@ -26,7 +26,7 @@ dependencies {
     api(project(":linq4j"))
     api("com.fasterxml.jackson.core:jackson-core")
     api("joda-time:joda-time")
-    api("org.apache.calcite.avatica:avatica-core")
+    api("org.apache.calcite.avatica:core")
     api("org.checkerframework:checker-qual")
     api("org.slf4j:slf4j-api")
 

@@ -25,7 +25,7 @@ dependencies {
     api(project(":core"))
     api(project(":linq4j"))
     api("com.google.guava:guava")
-    api("org.apache.calcite.avatica:avatica-core")
+    api("org.apache.calcite.avatica:core")
     api("org.slf4j:slf4j-api")
 
     implementation("net.sf.opencsv:opencsv")

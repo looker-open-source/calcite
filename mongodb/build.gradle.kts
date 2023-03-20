@@ -20,7 +20,7 @@ dependencies {
     api("com.google.guava:guava")
     api("org.slf4j:slf4j-api")
 
-    implementation("org.apache.calcite.avatica:avatica-core")
+    implementation("org.apache.calcite.avatica:core")
     implementation("org.mongodb:mongo-java-driver")
 
     testImplementation(project(":testkit"))
