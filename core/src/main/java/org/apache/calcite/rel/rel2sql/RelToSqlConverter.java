@@ -618,13 +618,8 @@ public class RelToSqlConverter extends SqlImplementor
       // a singleton CUBE and ROLLUP are the same but we prefer ROLLUP;
       // fall through
     case ROLLUP:
-      final List<Integer> rollupBits = Aggregate.Group.getRollup(aggregate.groupSets);
-      final List<SqlNode> rollupKeys = rollupBits
-          .stream()
-          .map(bit -> builder.context.field(bit))
-          .collect(Collectors.toList());
       return ImmutableList.of(
-          SqlStdOperatorTable.ROLLUP.createCall(SqlParserPos.ZERO, rollupKeys));
+          SqlStdOperatorTable.ROLLUP.createCall(SqlParserPos.ZERO, groupKeys));
     default:
     case OTHER:
       // Make sure that the group sets contains all bits.
