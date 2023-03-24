@@ -29,7 +29,7 @@ dependencies {
     api("org.slf4j:slf4j-api")
 
     implementation("com.google.guava:guava")
-    implementation("org.apache.calcite.avatica:avatica-core")
+    implementation("org.apache.calcite.avatica:core")
     implementation("org.apache.commons:commons-lang3")
 
     testImplementation(project(":testkit"))

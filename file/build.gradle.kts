@@ -29,7 +29,7 @@ dependencies {
     implementation("com.google.guava:guava")
     implementation("com.joestelmach:natty")
     implementation("net.sf.opencsv:opencsv")
-    implementation("org.apache.calcite.avatica:avatica-core")
+    implementation("org.apache.calcite.avatica:core")
     implementation("commons-io:commons-io")
     implementation("org.apache.commons:commons-lang3")
     implementation("org.jsoup:jsoup")
