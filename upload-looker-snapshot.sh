@@ -22,21 +22,21 @@
 function snapshot_upload {
     mvn deploy:deploy-file \
         -DgroupId=org.apache.calcite \
-        -DartifactId="$1" \
+        -DartifactId="calcite-$1" \
         -Dversion="$2" \
         -Dpackaging=jar \
         -Dfile="$3" \
-        -DgeneratePom=true \
+        -DpomFile="$1/build/publications/$1/pom-default.xml" \
         -DrepositoryId=nexus \
         -Durl=https://nexusrepo.looker.com/repository/maven-snapshots/
 }
 
 ./gradlew build && (
     VERSION="$(sed -n 's/^calcite\.version=\([^ ]*\).*/\1/p' gradle.properties)-SNAPSHOT"
-    snapshot_upload calcite-core "$VERSION" "./core/build/libs/calcite-core-$VERSION.jar"
-    snapshot_upload calcite-babel "$VERSION" "./babel/build/libs/calcite-babel-$VERSION.jar"
-    snapshot_upload calcite-linq4j "$VERSION" "./linq4j/build/libs/calcite-linq4j-$VERSION.jar"
-    snapshot_upload calcite-testkit "$VERSION" "./testkit/build/libs/calcite-testkit-$VERSION.jar"
+    snapshot_upload core "$VERSION" "./core/build/libs/calcite-core-$VERSION.jar"
+    snapshot_upload babel "$VERSION" "./babel/build/libs/calcite-babel-$VERSION.jar"
+    snapshot_upload linq4j "$VERSION" "./linq4j/build/libs/calcite-linq4j-$VERSION.jar"
+    snapshot_upload testkit "$VERSION" "./testkit/build/libs/calcite-testkit-$VERSION.jar"
     echo
     echo "Done uploading version ${VERSION} to Looker Nexus Snapshots!"
 )

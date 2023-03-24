@@ -86,6 +86,14 @@ include(
     "ubenchmark"
 )
 
+/** Pulls our Avatica fork from looker-open-source and builds it as a composite project */
+sourceControl {
+    gitRepository(uri("https://github.com/looker-open-source/calcite-avatica.git")) {
+        producesModule(("org.apache.calcite.avatica:core"))
+        producesModule(("org.apache.calcite.avatica:server"))
+    }
+}
+
 // See https://github.com/gradle/gradle/issues/1348#issuecomment-284758705 and
 // https://github.com/gradle/gradle/issues/5321#issuecomment-387561204
 // Gradle inherits Ant "default excludes", however we do want to archive those files

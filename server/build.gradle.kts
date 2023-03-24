@@ -25,7 +25,7 @@ plugins {
 dependencies {
     api(project(":core"))
     api(project(":linq4j"))
-    api("org.apache.calcite.avatica:avatica-core")
+    api("org.apache.calcite.avatica:core")
 
     implementation("com.google.guava:guava")
     implementation("org.slf4j:slf4j-api")

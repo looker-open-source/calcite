@@ -27,16 +27,14 @@ import com.google.common.collect.ImmutableList;
  * into an expression before use.
  */
 public class MeasureSqlType extends ApplySqlType {
-  private final RelDataType elementType;
   /** Private constructor. */
   private MeasureSqlType(RelDataType elementType, boolean isNullable) {
     super(SqlTypeName.MEASURE, isNullable, ImmutableList.of(elementType));
-    this.elementType = elementType;
     computeDigest();
   }
 
   @Override public RelDataType getMeasureElementType() {
-    return elementType;
+    return types.get(0);
   }
 
   /** Creates a MeasureSqlType. */
