@@ -7399,6 +7399,8 @@ public class SqlOperatorTest {
         "54", "BIGINT NOT NULL");
     f.checkScalar("extract(dow from date '2008-2-23')",
         "7", "BIGINT NOT NULL");
+    f.checkScalar("extract(dayofweek from date '2008-2-23')",
+        "7", "BIGINT NOT NULL");
     f.checkScalar("extract(dow from date '2008-2-24')",
         "1", "BIGINT NOT NULL");
     f.checkScalar("extract(dayofweek from date '2008-2-23')",
