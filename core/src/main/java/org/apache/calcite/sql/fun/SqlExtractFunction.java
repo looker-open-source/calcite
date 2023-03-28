@@ -35,7 +35,6 @@ import org.apache.calcite.util.Util;
 
 import com.google.common.collect.ImmutableSet;
 
-import static org.apache.calcite.sql.validate.SqlNonNullableAccessors.getOperandLiteralValueOrThrow;
 import static org.apache.calcite.util.Static.RESOURCE;
 
 /**
@@ -203,11 +202,12 @@ public class SqlExtractFunction extends SqlFunction {
   }
 
   @Override public SqlMonotonicity getMonotonicity(SqlOperatorBinding call) {
-    TimeUnitRange value = getOperandLiteralValueOrThrow(call, 0, TimeUnitRange.class);
-    switch (value) {
-    case YEAR:
+    // If string value of first operand is anything except YEAR,
+    // return NOT_MONOTONIC.
+    Object value = call.getOperandLiteralValue(0, Object.class);
+    if (value != null && value.toString().equals("YEAR")) {
       return call.getOperandMonotonicity(1).unstrict();
-    default:
+    } else {
       return SqlMonotonicity.NOT_MONOTONIC;
     }
   }
