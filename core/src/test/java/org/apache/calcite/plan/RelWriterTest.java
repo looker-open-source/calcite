@@ -903,25 +903,6 @@ class RelWriterTest {
   @Test void testSearchOperator() throws JsonProcessingException {
     final FrameworkConfig config = RelBuilderTest.config().build();
     final RelBuilder b = RelBuilder.create(config);
-    // Commented out but we should also get this passing! SEARCH in a relnode using the json writer
-    // also leads to failures.
-    // final RelNode rel = b
-    //     .scan("EMP")
-    //     .project(
-    //         b.between(
-    //             b.field("DEPTNO"),
-    //             b.literal(20),
-    //             b.literal(30))
-    //     )
-    //     .build();
-    // final RelJsonWriter jsonWriter =
-    // new RelJsonWriter(new JsonBuilder(), RelJson::withLibraryOperatorTable);
-    // rel.explain(jsonWriter);
-    // String relJsonString = jsonWriter.asString();
-    // String result = deserializeAndDumpToTextFormat(getSchema(rel), relJsonString);
-    // final String expected = "<TODO>";
-    // assertThat(result, isLinux(expected));
-
     RexNode between =
         b.getRexBuilder().makeBetween(b.literal(45),
             b.literal(20),
@@ -949,10 +930,8 @@ class RelWriterTest {
           .configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
           .readValue(rexNodeAsJsonString, typeRef);
       String deserializedObjAsJsonString = mapper.writeValueAsString(deserializedMap);
-
       assertThat(rexNodeAsJsonString, is(deserializedObjAsJsonString));
     }
-
   }
 
   @Test void testDeserializeInvalidOperatorName() {
