@@ -18,6 +18,7 @@ package org.apache.calcite.rel.externalize;
 
 import org.apache.calcite.avatica.AvaticaUtils;
 import org.apache.calcite.avatica.util.TimeUnit;
+import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
 import org.apache.calcite.plan.RelOptTable;
 import org.apache.calcite.plan.RelTraitSet;
@@ -45,6 +46,7 @@ import org.apache.calcite.rex.RexLiteral;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.rex.RexOver;
 import org.apache.calcite.rex.RexSlot;
+import org.apache.calcite.rex.RexUtil;
 import org.apache.calcite.rex.RexWindow;
 import org.apache.calcite.rex.RexWindowBound;
 import org.apache.calcite.rex.RexWindowBounds;
@@ -84,6 +86,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.apache.calcite.rel.RelDistributions.EMPTY;
+import static org.apache.calcite.util.Bug.CALCITE_5614_FIXED;
 import static org.apache.calcite.util.Static.RESOURCE;
 
 import static java.util.Objects.requireNonNull;
@@ -551,6 +554,11 @@ public class RelJson {
       return map;
     default:
       if (node instanceof RexCall) {
+        if (!CALCITE_5614_FIXED && node.getKind() == SqlKind.SEARCH) {
+          // Expanding SEARCH operator because toJson doesn't currently support handling Sarg
+          return toJson(
+              RexUtil.expandSearch(new RexBuilder(new JavaTypeFactoryImpl()), null, node));
+        }
         final RexCall call = (RexCall) node;
         map = jsonBuilder().map();
         map.put("op", toJson(call.getOperator()));

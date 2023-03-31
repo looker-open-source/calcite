@@ -98,6 +98,7 @@ import java.util.stream.Stream;
 
 import static org.apache.calcite.test.Matchers.isLinux;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -897,6 +898,40 @@ class RelWriterTest {
     String expected = "LogicalSnapshot(period=[2011-07-20 12:34:56])\n"
         + "  LogicalTableScan(table=[[scott, products_temporal]])\n";
     assertThat(s, isLinux(expected));
+  }
+
+  @Test void testSearchOperator() throws JsonProcessingException {
+    final FrameworkConfig config = RelBuilderTest.config().build();
+    final RelBuilder b = RelBuilder.create(config);
+    RexNode between =
+        b.getRexBuilder().makeBetween(b.literal(45),
+            b.literal(20),
+            b.literal(30));
+    RexNode inNode =
+        b.getRexBuilder().makeIn(b.literal(12),
+            ImmutableList.of(
+                b.literal(20),
+                b.literal(14)));
+
+
+    RelJson relJson = RelJson.create().withJsonBuilder(new JsonBuilder());
+    final ObjectMapper mapper = new ObjectMapper();
+    final TypeReference<LinkedHashMap<String, Object>> typeRef =
+        new TypeReference<LinkedHashMap<String, Object>>() { };
+    List<RexNode> testNodes = ImmutableList.of(between, inNode);
+    for (RexNode node: testNodes) {
+      Object rexified = relJson.toJson(node);
+      // Test toJson -> toRex -> toJson is the same.
+      RexNode deserialized = relJson.toRex(b.getCluster(), rexified);
+      assertThat(rexified, equalTo(relJson.toJson(deserialized)));
+
+      String rexNodeAsJsonString = mapper.writeValueAsString(rexified);
+      final Map<String, Object> deserializedMap = mapper
+          .configure(DeserializationFeature.USE_BIG_DECIMAL_FOR_FLOATS, true)
+          .readValue(rexNodeAsJsonString, typeRef);
+      String deserializedObjAsJsonString = mapper.writeValueAsString(deserializedMap);
+      assertThat(rexNodeAsJsonString, is(deserializedObjAsJsonString));
+    }
   }
 
   @Test void testDeserializeInvalidOperatorName() {
