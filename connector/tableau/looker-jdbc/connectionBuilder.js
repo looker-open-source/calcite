@@ -21,7 +21,8 @@
     var urlBuilder = "jdbc:looker:url=https://" +
         attr[connectionHelper.attributeServer] +
         ":" + attr[connectionHelper.attributePort] +
-	";serialization=JSON";
+	";serialization=JSON" +
+	";userAgent=Tableau";
     return [urlBuilder];
 })
 
