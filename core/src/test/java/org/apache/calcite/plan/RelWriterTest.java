@@ -1059,7 +1059,8 @@ class RelWriterTest {
 
   /** Test case for
    * <a href="https://issues.apache.org/jira/browse/CALCITE-5607">[CALCITE-5607]</a>
-   * <p>Before the fix, RelJson.toRex would throw an ArrayIndexOutOfBounds error
+   *
+   * <p> Before the fix, RelJson.toRex would throw an ArrayIndexOutOfBounds error
    * when deserialization.
    * */
   @Test void testDeserializeMinusDateOperator() {
