@@ -51,14 +51,15 @@ public class TimestampWithTimeZoneString
 
   /** Creates a TimestampWithTimeZoneString.
    *
-   * TODO: BigQuery allows odd TIMESTAMP literals that, with proper aliasing of
-   * TIMESTAMP -> TIMESTAMP WITH LOCAL TIME ZONE, cause failures here.
+   * <p> TODO: BigQuery allows odd TIMESTAMP literals that, with proper aliasing of
+   *
+   * <p> TIMESTAMP -> TIMESTAMP WITH LOCAL TIME ZONE, cause failures here.
    * There are two cases this band-aid patch addresses:
    *   1) A `TIMESTAMP` with a date format in function calls
    *        e.g. TIMESTAMP_DIFF(TIMESTAMP "2018-08-14", TIMESTAMP "2018-10-14", DAY)
    *   2) TIMESTAMP literals without a provided timezone e.g. TIMESTAMP "2010-07-07 10:20:00"
    *
-   * Both cases were throwing an {@link IndexOutOfBoundsException} when evaluating the
+   * <p> Both cases were throwing an {@link IndexOutOfBoundsException} when evaluating the
    * `timeZoneString` of a literal.
    * */
   private static final int TIMESTAMP_WITH_TIMEZONE_LENGTH = 20;
