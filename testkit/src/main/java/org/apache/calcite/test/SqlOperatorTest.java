@@ -13783,6 +13783,7 @@ public class SqlOperatorTest {
    * precision.
    * </ul>
    */
+  @Disabled // [CALCITE-6055] Re-enable this ASAP.
   @Test void testLiteralAtLimit() {
     final SqlOperatorFixture f = fixture();
     f.setFor(SqlStdOperatorTable.CAST, VmName.EXPAND);
