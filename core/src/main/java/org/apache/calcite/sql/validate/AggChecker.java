@@ -106,7 +106,7 @@ class AggChecker extends SqlBasicVisitor<Void> {
       return null;
     }
 
-    if (!validator.config().nakedMeasures()
+    if (!validator.config().nakedMeasuresInsideAggregatingQuery()
         && isMeasureExp(id)) {
       SqlNode originalExpr = validator.getOriginal(id);
       throw validator.newValidationError(originalExpr,

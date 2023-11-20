@@ -4829,7 +4829,7 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
     // Unless 'naked measures' are enabled, a non-aggregating query cannot
     // reference measure columns. (An aggregating query can use them as
     // argument to the AGGREGATE function.)
-    if (!config.nakedMeasures()
+    if (!config.nakedMeasuresOutsideAggregatingQuery()
         && !(scope instanceof AggregatingScope)
         && scope.isMeasureRef(expr)) {
       throw newValidationError(expr,
