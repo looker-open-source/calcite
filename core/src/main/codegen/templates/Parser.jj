@@ -6712,6 +6712,12 @@ List<SqlNode> JsonNameAndValue() :
     (
         <VALUE>
     |
+        <COMMA> {
+            if (kvMode) {
+                throw SqlUtil.newContextException(getPos(), RESOURCE.illegalComma());
+            }
+        }
+    |
         <COLON> {
             if (kvMode) {
                 throw SqlUtil.newContextException(getPos(), RESOURCE.illegalColon());
@@ -6747,7 +6753,8 @@ SqlCall JsonObjectFunctionCall() :
 }
 {
     <JSON_OBJECT> { span = span(); }
-    <LPAREN> [
+    <LPAREN>
+    [
         LOOKAHEAD(2)
         list = JsonNameAndValue() {
             nvArgs.addAll(list);

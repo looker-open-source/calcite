@@ -112,6 +112,9 @@ public interface CalciteResource {
   @BaseMessage("Illegal identifier '':''. Was expecting ''VALUE''")
   ExInst<CalciteException> illegalColon();
 
+  @BaseMessage("Illegal identifier '',''. Was expecting ''VALUE''")
+  ExInst<CalciteException> illegalComma();
+
   @BaseMessage("TABLESAMPLE percentage must be between 0 and 100, inclusive")
   @Property(name = "SQLSTATE", value = "2202H")
   ExInst<CalciteException> invalidSampleSize();

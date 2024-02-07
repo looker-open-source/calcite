@@ -8685,6 +8685,10 @@ public class SqlParserTest {
         .ok("JSON_OBJECT(KEY 'foo' VALUE "
             + "JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL) "
             + "FORMAT JSON NULL ON NULL)");
+    expr("json_object('foo', 'bar')")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar' NULL ON NULL)");
+    expr("json_object('foo', 'bar', 'baz', 'qux')")
+        .ok("JSON_OBJECT(KEY 'foo' VALUE 'bar', KEY 'baz' VALUE 'qux' NULL ON NULL)");
 
     if (!Bug.TODO_FIXED) {
       return;
