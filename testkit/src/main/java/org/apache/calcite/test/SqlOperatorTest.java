@@ -1276,7 +1276,7 @@ public class SqlOperatorTest {
     }
     // Remove the if condition and the else block once CALCITE-6053 is fixed
     if (TestUtil.AVATICA_VERSION.startsWith("1.0.0-dev-main")
-        || TestUtil.AVATICA_VERSION.contains("looker")) {
+        || TestUtil.AVATICA_VERSION.contains("1.24")) {
       if (castType == CastType.CAST) {
         f.checkFails("cast('1945-2-2 12:2:5' as TIMESTAMP)",
             "Invalid DATE value, '1945-2-2 12:2:5'", true);
