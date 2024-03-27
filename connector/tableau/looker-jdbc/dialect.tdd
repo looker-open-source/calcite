@@ -667,7 +667,8 @@
       <argument type='spatial' />
     </function>
     <function group='logical' name='IIF' return-type='bool'>
-      <formula>IF((%1), (%2), (%3))</formula>
+      <!-- To prevent IF from coercing NULL to FALSE, wrap in another IF that checks for NULL. -->
+      <formula>IF((%1) IS NOT NULL, IF((%1), (%2), (%3)), NULL)</formula>
       <argument type='bool' />
       <argument type='bool' />
       <argument type='bool' />
@@ -687,7 +688,7 @@
       <argument type='real' />
     </function>
     <function group='logical' name='IIF' return-type='int'>
-      <formula>IF((%1), (%2), (%3))</formula>
+      <formula>IF((%1) IS NOT NULL, IF((%1), (%2), (%3)), NULL)</formula>
       <argument type='bool' />
       <argument type='int' />
       <argument type='int' />
@@ -700,7 +701,7 @@
       <argument type='int' />
     </function>
     <function group='logical' name='IIF' return-type='str'>
-      <formula>IF((%1), (%2), (%3))</formula>
+      <formula>IF((%1) IS NOT NULL, IF((%1), (%2), (%3)), NULL)</formula>
       <argument type='bool' />
       <argument type='str' />
       <argument type='str' />
@@ -713,7 +714,7 @@
       <argument type='str' />
     </function>
     <function group='logical' name='IIF' return-type='datetime'>
-      <formula>IF((%1), (%2), (%3))</formula>
+      <formula>IF((%1) IS NOT NULL, IF((%1), (%2), (%3)), NULL)</formula>
       <argument type='bool' />
       <argument type='datetime' />
       <argument type='datetime' />
@@ -726,7 +727,7 @@
       <argument type='datetime' />
     </function>
     <function group='logical' name='IIF' return-type='date'>
-      <formula>IF((%1), (%2), (%3))</formula>
+      <formula>IF((%1) IS NOT NULL, IF((%1), (%2), (%3)), NULL)</formula>
       <argument type='bool' />
       <argument type='date' />
       <argument type='date' />
@@ -739,7 +740,7 @@
       <argument type='date' />
     </function>
     <function group='logical' name='IIF' return-type='spatial'>
-      <formula>IF((%1), (%2), (%3))</formula>
+      <formula>IF((%1) IS NOT NULL, IF((%1), (%2), (%3)), NULL)</formula>
       <argument type='bool' />
       <argument type='spatial' />
       <argument type='spatial' />
