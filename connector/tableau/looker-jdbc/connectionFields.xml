@@ -49,4 +49,6 @@
     </conditions>
   </field>
 
+  <field name="v-plugin-version" label="Plugin Version" value-type="string" category="general" default-value="0.2.0" editable="false"/>
+
 </connection-fields>
