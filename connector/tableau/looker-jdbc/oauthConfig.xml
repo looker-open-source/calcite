@@ -21,8 +21,8 @@
     <!-- must be the same as "class" attribute for the connector-plugin element in manifest.xml. -->
 	<dbclass>looker-jdbc</dbclass>
 
-    <!-- clientSecret, clientId, and redirectUri must exactly match the registered OAuth client on the Looker instance. -->
-    <clientIdDesktop>35FBB268-0CB0-4822-AFE3-28638C1C6269</clientIdDesktop>
+    <!--clientId and redirectUri must exactly match the registered OAuth client on the Looker instance. -->
+    <clientIdDesktop>com.looker.tableau.desktop</clientIdDesktop>
     <clientSecretDesktop>doesnt_matter</clientSecretDesktop>
     <redirectUrisDesktop>https://localhost:55556/Callback</redirectUrisDesktop>
 
