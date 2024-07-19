@@ -15,7 +15,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<connector-plugin class='looker' superclass='jdbc' plugin-version='0.2.0' name='Looker' version='18.1' min-version-tableau='2020.4'>
+<connector-plugin class='looker' superclass='jdbc' plugin-version='1.0.0' name='Looker' version='18.1' min-version-tableau='2020.4'>
   <vendor-information>
     <company name="Google"/>
     <support-link url="https://www.looker.com/"/>
