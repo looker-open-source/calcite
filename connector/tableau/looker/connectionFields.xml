@@ -22,7 +22,7 @@
     <validation-rule reg-exp="^[a-zA-Z0-9\.\-]*$"/>
   </field>
 
-  <field name="authentication" label="Authentication" category="authentication" value-type="selection" default-value="auth-user-pass" >
+  <field name="authentication" label="Authentication" category="authentication" value-type="selection" default-value="OAuth" >
     <selection-group>
       <option value="auth-user-pass" label="Username and Password"/>
       <option value="oauth" label="OAuth"/>
